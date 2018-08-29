@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--from https://getbootstrap.com/docs/4.1/examples/blog/-->
+<head th:replace="_fragment::base_head_title(~{::title})">
+    <title>On Spring Post List</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="_fragment::site-header"></header>
+    <div class="row">
+
+        <div class="col-md-8">
+            <div class="card flex-md-row mb-4 box-shadow " th:each="post : ${postPage.content}">
+                <img class="card-img-left " th:width="150px" th:src="${post.book.imageUrl}" alt="Card image cap">
+                <div class="card-body d-flex flex-column align-items-start">
+                    <h6 th:text="${post.book.title}" class="text-secondary pb-2 mb-2 font-italic border-bottom">
+                        책 제목 : [[${post.bookTitle}]]
+                    </h6>
+                    <h3>
+                        <a class="text-dark" th:text="${post.subject}" th:href="@{'/@'+${post.userId}+'/post/'+${post.id}}">Post subject</a>
+                    </h3>
+                    <p>
+                        <span th:text="${post.createdAt}">January 1, 2019</span>
+                    </p>
+                    <p>
+                        <a th:href="@{'/post/tag/'+${postTag.tag.name}}" th:text="${postTag.tag.name}" class="button button-brand btn btn-info mb-2 mr-2" th:each="postTag : ${post.postTagList}"></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <aside th:replace="_fragment::blog-sidebar"></aside>
+    </div>
+    <hr/>
+    <a th:href="@{'/'}" class="button button-brand btn-lg btn-info mb-5 mb-lg-2">Main</a>
+    <a th:href="@{'/post/write'}" class="button button-brand btn-lg btn-success mb-5 mb-lg-2">Write</a>
+</div>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+
+<div th:replace="_fragment::blog-sidebar-tag"></div>
+
+</body>
+</html>

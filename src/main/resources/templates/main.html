@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragment::base_head"/>
+<body>
+<section class="container">
+    <header th:replace="_fragment::site-header"></header>
+
+    <h4>최신 작성된 글 <a th:href="@{'/post/list'}" role="button" class="btn btn-outline-success btn-sm">더보기</a></h4>
+    <div class="row mb-2" id="post_list"></div>
+
+    <h4>최근 등록된 책 <a th:href="@{'/book/list'}" role="button" class="btn btn-outline-success btn-sm">더보기</a></h4>
+    <div class="row mb-2" id="book_list"></div>
+
+    <h2>[[${title}]]</h2>
+    <h1 th:text="${title}">Title</h1>
+    <div th:text="${message}">Content</div>
+    <div th:text="${#dates.format(date)}">Date time</div>
+
+</section>
+<footer th:replace="_fragment::site-footer"/>
+<th:block th:replace="_fragment::base_script"/>
+
+
+<script id="post_template" type="x-handlebars-template">
+    {{#.}}
+    <div class="col-lg-6">
+        <div class="card flex-sm-row mb-4 box-shadow">
+            <div class="card-body">
+
+                <h6 class="text-secondary pb-2 mb-2 font-italic border-bottom">{{book.title}}</h6>
+
+                <div class="media">
+                    <img class="mr-3" src="/portrait.png" width="64px" height="64px" alt="{{book.title}}">
+                    <div class="media-body">
+                        <h5 class="mt-0"><a class="text-dark" href="/@{{userId}}/post/{{id}}">{{subject}}</a></h5>
+                        <p><span class=" text-muted"> {{formatTime createdAt "YYYY-MM-DD a h:mm"}}</span> by {{userId}}</p>
+
+                        {{#postTagList}}
+                        <a href="{{tag.name}}" class="btn btn-info btn-sm mb-1">{{tag.name}}</a>
+                        {{/postTagList}}
+                    </div>
+                </div>
+            </div>
+            <img class="card-img-right" style="width: 140px;" src="{{book.imageUrl}}" alt="{{book.title}}">
+        </div>
+    </div>
+    {{/.}}
+</script>
+
+<script id="book_template" type="x-handlebars-template">
+    {{#.}}
+    <div class="col-lg-6">
+        <div class="card flex-lg-row mb-4 box-shadow">
+
+            <img class="card-img-left flex-auto" th:width="140px" src="{{imageUrl}}" alt="{{title}}">
+
+            <div class="card-body d-flex flex-column align-items-start">
+                <h5 class="mb-0">
+                    <a class="text-dark" href="/book/{{isbn}}">{{title}}</a>
+                </h5>
+                <div class="mb-1 text-muted">{{publishedDate}}</div>
+                <p>{{authors}}</p>
+                <p>
+                    {{#tags}}
+                    <a href="{{name}}" class="btn btn-primary btn-sm mb-1">{{name}}
+                        <span class="badge badge-light">{{useCount}}</span></a>
+                    {{/tags}}
+                </p>
+            </div>
+        </div>
+    </div>
+    {{/.}}
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var post_template = Handlebars.compile($('#post_template').html());
+
+        $.ajax({
+            url: '/posts',
+            method: 'get',
+            sync: true,
+            success: function (data, status) {
+                $("#post_list").html(post_template(data));
+            }
+        });
+
+        var book_template = Handlebars.compile($('#book_template').html());
+
+        $.ajax({
+            url: '/books',
+            method: 'get',
+            sync: true,
+            success: function (data, status) {
+                $("#book_list").html(book_template(data));
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

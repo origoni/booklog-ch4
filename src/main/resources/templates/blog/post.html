@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--from https://getbootstrap.com/docs/4.1/examples/blog/-->
+    <th:block th:replace="_fragment::base_meta"/>
+    <th:block th:replace="_fragment::base_link"/>
+    <title th:text="${post.book.title}">BookTitle</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="_fragment::site-header"></header>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="jumbotron">
+                <div class="row mb-2">
+                    <div class="col-md-9">
+                        <h3 class="mb-0">
+                            <a class="text-dark" th:text="${post.book.title}" th:href="@{'/book/'+${post.book.isbn}}">Post subject</a>
+                        </h3>
+                        <div class="mb-1 text-muted" th:text="${post.book.publishedDate}">${book.publishedDate}</div>
+                        <p class="card-text mb-auto" th:text="${post.book.authors}">Writer</p>
+                        <a th:href="@{'/book/'+${post.book.isbn}}" class="btn btn-success mt-4">이 책에 대해 더 알아보기</a>
+                    </div>
+                    <div class="col-md-3">
+                        <img class="d-none d-lg-block" th:src="${post.book.imageUrl}" th:width="140px" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <article>
+                <h2 th:text="${post.subject}">${post.subject}</h2>
+                <p><span th:text="${post.createdAt}">January 1, 2019</span></p>
+                <div th:text="${post.content}" class="mb-3">${post.content}</div>
+                <a th:href="@{'/post/tag/'+${postTag.tag.name}}" th:text="${postTag.tag.name}" class="btn btn-info btn-sm mb-1 mr-1" th:each="postTag : ${post.postTagList}"></a>
+            </article>
+            <hr>
+
+            <a th:href="@{/post/{postId}/edit(postId=${post.id})}" class="button button-brand btn btn-warning mb-5 mb-lg-2">Edit</a>
+            <a th:href="@{'/post/'+${post.id}+'/delete'}" id="delete" class="button button-brand btn btn-danger mb-5 mb-lg-2">Delete</a>
+
+            <div id="comment_list"></div>
+            <br>
+            댓글 달기
+            <form action="/comments" method="post" id="comment_form">
+                <input type="hidden" name="postId" th:value="${post.id}">
+                <textarea name="content" class="form-control" rows="2"></textarea>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="userId" name="userId">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">댓글 저장</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <aside th:replace="_fragment::blog-sidebar"></aside>
+    </div>
+
+</div>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+
+<script id="template" type="x-handlebars-template">
+    {{#.}}
+    <div class="media mt-4">
+        <div class="media-body">
+            <h6>{{{content}}}</h6>
+            {{formatTime createdAt "YYYY-MM-DD a h:mm"}} by <h6 class="media-heading" style="display: inline-block;">{{userId}}</h6>
+            <button type="button" class="btn btn-danger btn-sm" onclick="if(!confirm('삭제할까요?')){return false;} deleteComment({{postId}}, {{id}});">삭제</button>
+            <br>
+        </div>
+    </div>
+    {{/.}}
+</script>
+
+<script type="text/javascript">
+
+    $("#delete").click(function () {
+        if (!confirm("정말로 삭제할까요?")) {
+            return false;
+        }
+    });
+
+    $("#comment_form").submit(function (event) {
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data, status) {
+                loadComment();
+                form[0].reset();
+            },
+            error: function (data, status) {
+                alert(data.responseJSON.message);
+            }
+        });
+        event.preventDefault();
+    });
+
+    var template = Handlebars.compile($('#template').html());
+
+    function loadComment() {
+        $.ajax({
+            type: "GET",
+            url: "/comments",
+            data: "postId=[[${post.id}]]",
+            dataType: 'json',
+            cache: false,
+            success: function (data, status) {
+                $('#comment_list').html(template(data));
+            },
+            error: function (data, status) {
+                alert("error");
+            }
+        }).always(function () {
+        });
+    }
+
+    function deleteComment(postId, commentId) { <!-- ⑧ -->
+        $.ajax({
+            type: "DELETE",
+            url: "/comments/" + commentId + "?postId=" + postId,
+            dataType: 'json',
+            success: function (data, status) {
+                loadComment();
+            },
+            error: function (data, status) {
+                alert(data.responseJSON.message);
+            }
+        });
+    }
+
+    loadComment();
+
+</script>
+
+<div th:replace="_fragment::blog-sidebar-tag"></div>
+
+</body>
+</html>

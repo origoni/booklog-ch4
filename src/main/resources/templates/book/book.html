@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--from https://getbootstrap.com/docs/4.1/examples/blog/-->
+<head th:replace="_fragment::base_head_title(~{::title})">
+    <title>On Spring Post List</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="_fragment::site-header"></header>
+
+    <div class="jumbotron">
+        <div class="row mb-2">
+            <div class="col-md-9">
+                <h3 class="mb-2">
+                    <a class="text-dark" th:text="${book.title}" th:href="@{'/book/'+${book.isbn}}">Post subject</a>
+                </h3>
+                <p class="mb-2" th:text="${book.authors}">Writer</p>
+                <p class="mb-2 text-muted" th:text="${book.publishedDate}">${book.publishedDate}</p>
+                <p class="mb-2" th:text="${book.publisher}">publisher</p>
+
+                <a th:href="@{'/post/tag/'+${tag.name}}" class="btn btn-primary btn-sm mb-1 mr-1" th:each="tag : ${book.tags}">[[${tag.name}]]
+                    <span class="badge badge-light">[[${tag.useCount}]]</span></a>
+
+                <hr>
+                <a th:href="@{'/post/write?isbn='+${book.isbn}}" class="btn btn-success mt-4">이 책에 대해 글쓰기</a>
+
+            </div>
+            <div class="col-md-3">
+                <img class="d-none d-md-block" th:src="${book.imageUrl}" th:width="230px" th:alt="${book.title}">
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="row mb-2" id="post_list"></div>
+</div>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+
+
+<script id="post_template" type="x-handlebars-template">
+    {{#.}}
+    <div class="col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow">
+            <div class="card-body d-flex flex-column align-items-start">
+                <div class="media">
+                    <img class="mr-3" src="/portrait.png" width="64px" height="64px" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <h5 class="mt-0"><a class="text-dark" href="/@{{userId}}/post/{{id}}">{{subject}}</a></h5>
+                        <p><span class=" text-muted"> {{formatTime createdAt "YYYY-MM-DD a h:mm"}}</span> by {{userId}}</p>
+                        {{#postTagList}}
+                        <a href="{{tag.name}}" class="btn btn-info btn-sm mb-1">{{tag.name}}</a>
+                        {{/postTagList}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/.}}
+</script>
+
+<script type="text/javascript">
+
+    Handlebars.registerHelper('formatTime', function (date, format) {
+        return moment(date).format(format);
+    });
+
+    var source = $("#post_template").html();
+    var template = Handlebars.compile(source);
+
+    $.ajax({
+        type: "GET",
+        url: "/posts/[[${book.isbn}]]",
+        cache: false,
+        success: function (data, status) {
+            var html = template(data);
+            $('#post_list').html(html);
+        },
+        error: function (data, status) {
+            alert("error data=" + data);
+            alert("error status=" + status);
+        }
+    }).always(function () {
+    });
+
+</script>
+
+</body>
+</html>

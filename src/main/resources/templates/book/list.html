@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--from https://getbootstrap.com/docs/4.1/examples/blog/-->
+<head th:replace="_fragment::base_head_title(~{::title})">
+    <title>On Spring Post List</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="_fragment::site-header"></header>
+
+    <a th:href="@{'/book/form'}" class="button button-brand btn-lg btn-info mb-5 mb-lg-2">새로운 책 추가</a>
+    <br>
+    <br>
+
+    <div class="row mb-2">
+        <div class="col-lg-6" th:each="book : ${bookPage.content}"> <!-- ① -->
+            <div class="card flex-md-row mb-4 box-shadow ">
+
+                <img class="card-img-left " th:width="150px" th:src="${book.imageUrl}" th:alt="${book.title}">
+
+                <div class="card-body d-flex flex-column align-items-start">
+                    <h5 class="mb-0">
+                        <a class="text-dark" th:text="${book.title}" th:href="@{'/book/'+${book.isbn}}">Post subject</a>
+                    </h5>
+                    <div class="mb-1 text-muted" th:text="${book.publishedDate}">${book.publishedDate}</div>
+                    <p class="card-text mb-auto" th:text="${book.authors}">Writer</p>
+
+                    <p>
+                        <a th:href="@{'/post/tag/'+${tag.name}}" class="btn btn-primary btn-sm mb-1 mr-1" th:each="tag : ${book.tags}">
+                            [[${tag.name}]] <span class="badge badge-light" th:text="${tag.useCount}">{{useCount}}</span></a>
+                    </p>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <a th:href="@{'/'}" class="button button-brand btn-lg btn-info mb-5 mb-lg-2">Main</a>
+
+</div>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+</body>
+</html>

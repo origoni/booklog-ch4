@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragment::base_head_title(~{::title})">
+    <title>Post Form</title>
+</head>
+<body>
+<section class="container">
+    <header th:replace="_fragment::site-header"></header>
+    <h2>글쓰기</h2>
+    <hr/>
+    <form action="../blog/post.html" method="post"
+          th:action="@{${#httpServletRequest.servletPath}}">
+
+        <fieldset class="form-group">
+            <label for="formGroupTitle">Book Title</label>
+            <input id="formGroupTitle" type="text" class="form-control"
+                   name="book.isbn" th:field="${postCommand.book.isbn}" readonly="readonly"/>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="formSubject">한줄 요약</label>
+            <input id="formSubject" type="text" class="form-control"
+                   name="subject" th:field="${postCommand.subject}"
+                   placeholder="Subject"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('postCommand.subject')}" th:text="' ' + ${error}"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="formContent">감상문</label>
+            <textarea id="formContent" class="form-control" name="content"
+                      rows="3" th:field="${postCommand.content}"></textarea>
+            <span class="text-danger" th:each="error : ${#fields.errors('postCommand.content')}" th:text="' ' + ${error}"/>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="formTags">태그</label>
+            <input id="formTags" class="form-control" type="text"
+                   name="tags" th:field="${postCommand.tags}"
+                   placeholder="Tag (option - 최대 10개. 공백으로 구분합니다.)"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="formUserId">userId</label>
+            <input id="formUserId" type="text" class="form-control"
+                   name="userId" th:field="${postCommand.userId}"
+                   placeholder="userId"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('postCommand.userId')}" th:text="' ' + ${error}"/>
+        </fieldset>
+
+        <input type="submit" class="btn btn-primary" value="저장"/>
+    </form>
+</section>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+<script type="text/javascript">
+    $('form').submit(function (event) {
+        $('form input:text, textarea').each(function () {
+            if (!($.trim($(this).val())).length) {
+                alert("모든 값을 입력해 주세요!");
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+</script>
+</body>
+</html>

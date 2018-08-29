@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--from https://getbootstrap.com/docs/4.1/examples/blog/-->
+<head th:replace="_fragment::base_head_title(~{::title})">
+    <title>On Spring Post List</title>
+</head>
+<body>
+<div class="container">
+    <header th:replace="_fragment::site-header"></header>
+
+    <form method="post" action="/book">
+        <fieldset class="form-group">
+            <label for="isbnForm">ISBN</label>
+            <input id="isbnForm" type="number" class="form-control" name="isbn" th:field="${book.isbn}"
+                   min="1000000000" max="9799999999999"/> <!--①-->
+            <span class="text-danger" th:each="error : ${#fields.errors('book.isbn')}" th:text="' ' + ${error}"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="titleForm">Title</label>
+            <input id="titleForm" type="text" class="form-control" name="title" th:field="${book.title}"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('book.title')}" th:text="' ' + ${error}"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="authorsForm">authors</label>
+            <input id="authorsForm" type="text" class="form-control" name="authors" th:field="${book.authors}"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('book.authors')}" th:text="' ' + ${error}"/>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="publisherForm">publisher</label>
+            <input id="publisherForm" type="text" class="form-control" name="publisher" th:field="${book.publisher}"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('book.publisher')}" th:text="' ' + ${error}"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="dateForm">PublishedDate</label>
+            <input id="dateForm" type="date" class="form-control" name="publishedDate" th:field="${book.publishedDate}"/> <!--②-->
+            <span class="text-danger" th:each="error : ${#fields.errors('book.publishedDate')}" th:text="' ' + ${error}"/>
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="imageUrlForm">ImageUrl</label>
+            <input id="imageUrlForm" type="text" class="form-control" name="imageUrl" th:field="${book.imageUrl}"/>
+            <span class="text-danger" th:each="error : ${#fields.errors('book.imageUrl')}" th:text="' ' + ${error}"/>
+        </fieldset>
+
+        <input class="btn btn-primary" type="submit" value="저장"/>
+    </form>
+
+    <hr/>
+
+    <a th:href="@{'/'}" class="button button-brand btn-lg btn-info mb-5 mb-lg-2">Main</a>
+    <a th:href="@{'/post/write'}" class="button button-brand btn-lg btn-success mb-5 mb-lg-2">Write</a>
+
+</div>
+
+<footer th:replace="_fragment::site-footer"></footer>
+<th:block th:replace="_fragment::base_script"/>
+</body>
+</html>
