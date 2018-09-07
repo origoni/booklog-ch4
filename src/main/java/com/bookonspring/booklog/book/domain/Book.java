@@ -47,6 +47,10 @@ public class Book {
     LocalDate publishedDate;
 
 
+    public Book(long isbn){
+        this.isbn = isbn;
+    }
+
     public Book(long isbn, String title, String authors, String publisher, String imageUrl, LocalDate publishedDate) {
         this.isbn = isbn;
         this.title = title;

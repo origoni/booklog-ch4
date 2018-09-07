@@ -2,10 +2,13 @@ package com.bookonspring.booklog;
 
 import com.bookonspring.booklog.book.domain.Book;
 import com.bookonspring.booklog.book.domain.BookRepository;
-import com.bookonspring.booklog.post.domain.repository.PostRepository;
-import com.bookonspring.booklog.tag.domain.TagCount;
+import com.bookonspring.booklog.book.domain.ReadBook;
+import com.bookonspring.booklog.book.domain.ReadBookId;
+import com.bookonspring.booklog.book.domain.ReadBookRepository;
 import com.bookonspring.booklog.post.domain.PostCommand;
 import com.bookonspring.booklog.post.domain.entity.Post;
+import com.bookonspring.booklog.post.domain.repository.PostRepository;
+import com.bookonspring.booklog.tag.domain.TagCount;
 import com.bookonspring.booklog.tag.domain.repository.PostTagRepository;
 import com.bookonspring.booklog.tag.domain.service.PostTagService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,10 @@ public class BooklogApplication {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    ReadBookRepository readBookRepository;
+
     @Autowired
     PostTagRepository postTagRepository;
 
@@ -42,7 +49,7 @@ public class BooklogApplication {
 
         bookRepository.save(new Book(9788997924035L, "자바의 신 VOL.1, 기초 문법편", "이상민", "로드북", "/book_cover/9788997924035.jpeg", LocalDate.of(2013, 2, 28)));
         bookRepository.save(new Book(9788997924042L, "자바의 신 Vol.2, 주요 API 응용편", "이상민", "로드북", "/book_cover/9788997924042.jpeg", LocalDate.of(2013, 4, 26)));
-        bookRepository.save(new Book(9788997924325L, "자바의 신, 2nd Edition (전2권)", "이상민", "로드북", "/book_cover/9788997924325.png", LocalDate.of(2017, 6, 23)));
+        Book book = bookRepository.save(new Book(9788997924325L, "자바의 신, 2nd Edition (전2권)", "이상민", "로드북", "/book_cover/9788997924325.png", LocalDate.of(2017, 6, 23)));
         bookRepository.save(new Book(9788997924271L, "파이썬의 신: 프로그래밍 언어를 배운다는 것", "김주현", "로드북", "/book_cover/9788997924271.png", LocalDate.of(2016, 12, 23)));
         bookRepository.save(new Book(9788997924202L, "안드로이드의 신: 원리와 예제로 배운다", "남진하", "로드북", "/book_cover/9788997924202.jpeg", LocalDate.of(2016, 5, 10)));
 
@@ -67,8 +74,28 @@ public class BooklogApplication {
         postRepository.save(new Post(9788997924097L, "철학과 프로그래밍의 접점을 찾아서", "개발을 하다보면 여러가지 질문에 답변을 해야 하고, 때론 논리적이지 못한 부분에 대한 대답을 찾아야 할 때도 있다.", "origoni"));
         postRepository.save(new Post(9788997924370L, "코틀린 기본 서적", "JVM에서 돌아가는 여러가지 언어들이 있지만, 요즘 안드로이드에서도 사용되고 핫한 언어 코틀린을 알아보자.", "origoni"));
 
+        log.warn("bookRepository.findAll()={}", bookRepository.findAll());
+
+        log.warn("postRepository.findAll()={}", postRepository.findAll());
+
+
         List<TagCount> tagCounts = postTagRepository.getBookTagList(9788997924325L);
         log.warn("tagCounts={}", tagCounts);
+
+
+        ReadBook readBook = new ReadBook();
+//        readBook.setId(new ReadBookId("origoni", book));
+        readBook.setBook(book);
+        readBook.setUserId("origoni");
+        readBook.setReadType(ReadBook.ReadType.DONE);
+        readBookRepository.save(readBook);
+
+        log.warn("readBookRepository.findAll()={}", readBookRepository.findAll());
+
+//        log.warn("readBookRepository.findById(new ReadBookId(\"origoni\", 9788997924325L))={}", readBookRepository.findById(new ReadBookId("origoni", book)));
+        log.warn("readBookRepository.findById(new ReadBookId(\"origoni\", 9788997924325L))={}", readBookRepository.findById(new ReadBookId("origoni", 9788997924325L)));
+
+
     }
 
 }

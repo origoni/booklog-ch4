@@ -4,6 +4,7 @@ import com.bookonspring.booklog.book.domain.Book;
 import com.bookonspring.booklog.post.domain.PostCommand;
 import com.bookonspring.booklog.tag.domain.entity.PostTag;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Data
 @Entity
+@ToString(exclude = "postTagList")
 public class Post {
 
     @Id
