@@ -1,10 +1,6 @@
 package com.bookonspring.booklog;
 
-import com.bookonspring.booklog.book.domain.Book;
-import com.bookonspring.booklog.book.domain.BookRepository;
-import com.bookonspring.booklog.book.domain.ReadBook;
-import com.bookonspring.booklog.book.domain.ReadBookId;
-import com.bookonspring.booklog.book.domain.ReadBookRepository;
+import com.bookonspring.booklog.book.domain.*;
 import com.bookonspring.booklog.post.domain.PostCommand;
 import com.bookonspring.booklog.post.domain.entity.Post;
 import com.bookonspring.booklog.post.domain.repository.PostRepository;
@@ -18,7 +14,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @SpringBootApplication
@@ -26,6 +25,9 @@ public class BooklogApplication {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Autowired
     ReadBookRepository readBookRepository;
@@ -83,11 +85,23 @@ public class BooklogApplication {
         log.warn("tagCounts={}", tagCounts);
 
 
+        Set<Category> categories = new HashSet<>();
+
+        Category category = new Category();
+        category.setName("Java");
+        categories.add(category);
+
+        category = new Category();
+        category.setName("DEV");
+        categories.add(category);
+
+
         ReadBook readBook = new ReadBook();
 //        readBook.setId(new ReadBookId("origoni", book));
         readBook.setBook(book);
         readBook.setUserId("origoni");
-        readBook.setReadType(ReadBook.ReadType.DONE);
+        readBook.setReadType(ReadType.DONE);
+        readBook.setCategories(categories);
         readBookRepository.save(readBook);
 
         log.warn("readBookRepository.findAll()={}", readBookRepository.findAll());
@@ -95,6 +109,22 @@ public class BooklogApplication {
 //        log.warn("readBookRepository.findById(new ReadBookId(\"origoni\", 9788997924325L))={}", readBookRepository.findById(new ReadBookId("origoni", book)));
         log.warn("readBookRepository.findById(new ReadBookId(\"origoni\", 9788997924325L))={}", readBookRepository.findById(new ReadBookId("origoni", 9788997924325L)));
 
+
+        List<Category> categories2 = categoryRepository.findAll();
+
+        log.warn("categoryRepository.findAll()={}", categories2);
+        log.warn("categoryRepository.findAll()={}", categoryRepository.findAll());
+
+        List<Category> categoryList = categoryRepository.findAllById(categories.stream().map(Category::getName).collect(Collectors.toList()));
+
+        for (Category c : categoryList) {
+            c.setUseCnt(c.getUseCnt() + 1);
+        }
+        log.warn("categoryList={}", categoryList);
+
+        categoryRepository.saveAll(categoryList);
+
+        log.warn("categoryRepository.findAll()={}", categoryRepository.findAll());
 
     }
 

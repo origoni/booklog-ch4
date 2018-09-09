@@ -2,18 +2,13 @@ package com.bookonspring.booklog.book.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 @Data
 @Entity
@@ -33,6 +28,14 @@ public class ReadBook {
     Book book;
 
 
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "read_book_category",
+            joinColumns = {@JoinColumn(name = "book"), @JoinColumn(name = "user_id")},
+            inverseJoinColumns = @JoinColumn(name = "name"))
+    private Set<Category> categories;
+
+
     @CreationTimestamp
     ZonedDateTime createdAt;
 
@@ -49,9 +52,9 @@ public class ReadBook {
     @Enumerated(EnumType.STRING)
     ReadType readType;
 
-    public enum ReadType {
-        BEFORE,
-        READING,
-        DONE
-    }
+//    public enum ReadType {
+//        BEFORE,
+//        READING,
+//        DONE
+//    }
 }

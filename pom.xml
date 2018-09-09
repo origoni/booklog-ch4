@@ -25,6 +25,7 @@
     </properties>
 
     <dependencies>
+
         <dependency> <!-- for Java 10 -->
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
